@@ -2,7 +2,7 @@ services:
   - type: web
     name: cold-craft-ai
     env: python
-    buildCommand: "pip install -r backend/requirements.txt && npm install && npm run build"
+    buildCommand: "pip install -r backend/requirements.txt && npm install && node node_modules/vite/bin/vite.js build"
     startCommand: "python backend/app.py"
     envVars:
       - key: PORT
