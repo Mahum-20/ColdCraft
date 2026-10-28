@@ -7,16 +7,15 @@ import PitchStudio from './components/PitchStudio';
 import EmailPreviewModal from './components/EmailPreviewModal';
 import SettingsModal from './components/SettingsModal';
 import { verifyEmailAddress, generatePitches } from './utils/api';
-import { AlertCircle, Zap } from 'lucide-react';
 
 const DEMO_DATA = {
   ctoName: 'Alex Rivera',
   companyName: 'ScaleFlow',
   domain: 'scaleflow.io',
-  linkedinUrl: 'https://linkedin.com/in/cto-profile',
+  linkedinUrl: 'https://linkedin.com/in/alex-rivera-cto',
   jobSnippet: "We're scaling our data pipelines and struggling with Celery queues backing up during peak traffic hours. Looking for a Python/Django engineer to optimize our PostgreSQL queries.",
   senderName: 'Mahum',
-  senderTitle: 'CS Gold Medalist & Senior Backend Engineer',
+  senderTitle: 'Senior Backend Engineer',
   senderSpecialty: 'high-throughput Django/Celery architectures & PostgreSQL optimization',
   availability: 'Available for up to 20 hours/week with zero onboarding lag'
 };
@@ -89,7 +88,7 @@ export default function App() {
   const handleRunEmailFinder = async () => {
     setErrorMessage(null);
     if (!formData.domain || !formData.ctoName) {
-      setErrorMessage("Please enter CTO Name and Company Domain.");
+      setErrorMessage("Please enter target officer name and company domain.");
       return;
     }
 
@@ -107,7 +106,7 @@ export default function App() {
         }
       }
     } catch (err) {
-      setErrorMessage(err.message || "Failed to verify email permutations.");
+      setErrorMessage(err.message || "Failed to complete email discovery.");
     } finally {
       setIsLoadingDiscovery(false);
     }
@@ -116,7 +115,7 @@ export default function App() {
   const handleGeneratePitches = async () => {
     setErrorMessage(null);
     if (!formData.jobSnippet) {
-      setErrorMessage("Please enter a Job Snippet or pain point context.");
+      setErrorMessage("Please enter a job description snippet or technical pain point.");
       return;
     }
 
@@ -148,60 +147,51 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-      {/* Header */}
+    <div className="min-h-screen flex flex-col bg-[#fcfbf9] text-[#1c1917]">
+      {/* Top Header */}
       <Header
         onOpenSettings={() => setSettingsOpen(true)}
         onLoadDemo={handleLoadDemo}
         isBackendLive={isBackendLive}
       />
 
-      {/* Main Content */}
+      {/* Main Workspace Layout */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-5">
-        {/* Error Alert */}
+        {/* Error Alert Box */}
         {errorMessage && (
-          <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-center justify-between text-xs text-red-800 animate-fadeIn">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-              <span>{errorMessage}</span>
-            </div>
+          <div className="p-3 bg-[#f5f4ef] border border-[#d6d3d1] flex items-center justify-between text-xs text-[#1c1917]">
+            <span>Error: {errorMessage}</span>
             <button
+              type="button"
               onClick={() => setErrorMessage(null)}
-              className="text-slate-400 hover:text-slate-700 font-bold text-sm"
+              className="font-mono text-xs text-[#78716c] hover:text-[#1c1917] px-1"
             >
-              ×
+              [Dismiss]
             </button>
           </div>
         )}
 
-        {/* Workflow Banner */}
-        <div className="clean-card rounded-2xl p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-gradient-to-r from-indigo-50/80 via-white to-blue-50/80">
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-600 text-white">
-                Executive Discovery & Outreach
-              </span>
-              <h2 className="text-sm md:text-base font-bold text-slate-900">
-                Company Executive Finder & Technical Cold Email Engine
-              </h2>
-            </div>
-            <p className="text-xs text-slate-600">
-              Discover CTOs/VPs via Gemini AI, auto-generate email candidates, run MX checks, and draft CTO pitches.
+        {/* Section Context Strip */}
+        <div className="p-4 bg-white border border-[#e7e5e4] flex flex-col md:flex-row md:items-baseline justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-serif font-bold text-[#1c1917]">
+              Technical Outreach & Intelligence Workbook
+            </h2>
+            <p className="text-xs text-[#78716c] mt-0.5">
+              Structured four-part research workflow: Personnel indexing, parameter mapping, MX handshake validation, and customized engineering memorandums.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 text-xs font-mono text-slate-600 self-start md:self-center font-medium">
-            <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-indigo-600" /> Executive Finder</span>
-            <span>•</span>
-            <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-emerald-600" /> Free MX SMTP</span>
+          <div className="font-mono text-[11px] text-[#78716c] self-start md:self-baseline shrink-0">
+            Protocol: RFC 5321 SMTP / Direct Mail Handshake
           </div>
         </div>
 
-        {/* 2-Column Dashboard Grid */}
+        {/* 2-Column Workbook Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column: Executive Finder & Inputs */}
+          {/* Left Column: Personnel Directory & Parameters */}
           <div className="lg:col-span-5 space-y-6">
-            {/* Executive Leadership Finder Card */}
+            {/* Section I: Personnel Directory */}
             <ExecutiveFinder
               companyName={formData.companyName}
               domain={formData.domain}
@@ -209,7 +199,7 @@ export default function App() {
               onSelectExecutive={handleSelectExecutive}
             />
 
-            {/* Target Form */}
+            {/* Section II: Target Form */}
             <InputForm
               formData={formData}
               setFormData={setFormData}
@@ -220,16 +210,16 @@ export default function App() {
             />
           </div>
 
-          {/* Right Column: Email Matrix & Pitch Studio */}
+          {/* Right Column: Address Matrix & Pitch Studio */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Email Discovery */}
+            {/* Section III: Email Discovery */}
             <EmailDiscovery
               discoveryData={discoveryData}
               selectedEmail={selectedEmail}
               onSelectEmail={(email) => setSelectedEmail(email)}
             />
 
-            {/* Pitch Studio */}
+            {/* Section IV: Pitch Studio */}
             <PitchStudio
               pitchData={pitchData}
               targetEmail={selectedEmail}
@@ -240,8 +230,8 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500">
-        <p>ColdCraft AI — Executive Leadership Discovery & CTO Outreach Platform</p>
+      <footer className="border-t border-[#e7e5e4] py-4 px-4 text-center text-xs font-mono text-[#78716c]">
+        <p>ColdCraft: Technical Outreach Platform and Personnel Directory</p>
       </footer>
 
       {/* Modals */}
