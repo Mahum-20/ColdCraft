@@ -74,11 +74,14 @@ export default function App() {
   };
 
   const handleSelectExecutive = (execData) => {
+    let cleanDom = execData.domain || formData.domain || '';
+    cleanDom = cleanDom.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0].split('?')[0];
+
     setFormData((prev) => ({
       ...prev,
       ctoName: execData.ctoName,
       companyName: execData.companyName || prev.companyName,
-      domain: execData.domain || prev.domain,
+      domain: cleanDom || prev.domain,
       linkedinUrl: execData.linkedinUrl || prev.linkedinUrl
     }));
   };

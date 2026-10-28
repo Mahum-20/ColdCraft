@@ -52,6 +52,7 @@ def health_check():
     return {"status": "online", "app": "ColdCraft AI"}
 
 @app.post("/api/find-leadership")
+@app.post("/api/find-executives")
 async def find_leadership_endpoint(req: LeadershipRequest):
     if not req.company_name:
         raise HTTPException(status_code=400, detail="Company Name is required.")
@@ -64,7 +65,8 @@ async def find_leadership_endpoint(req: LeadershipRequest):
         )
         return {
             "success": True,
-            "executives": executives
+            "executives": executives,
+            "people": executives
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Executive discovery failed: {str(e)}")
