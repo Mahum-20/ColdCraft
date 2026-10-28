@@ -2,6 +2,23 @@
 
 const API_BASE = '';
 
+export async function findLeadership(companyName, domain, geminiApiKey) {
+  const response = await fetch(`${API_BASE}/api/find-leadership`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      company_name: companyName,
+      domain: domain,
+      gemini_api_key: geminiApiKey || null
+    })
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || 'Leadership search request failed.');
+  }
+  return response.json();
+}
+
 export async function verifyEmailAddress(firstName, lastName, domain) {
   const response = await fetch(`${API_BASE}/api/verify-email`, {
     method: 'POST',

@@ -9,6 +9,7 @@ from typing import Optional, List, Dict, Any
 
 from email_verifier import run_email_discovery
 from pitch_engine import extract_tech_and_pain_points, generate_fallback_pitches, generate_pitches_with_gemini
+from executive_finder import find_company_leadership
 
 app = FastAPI(
     title="ColdCraft AI API & Web App",
@@ -16,7 +17,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS for development
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,6 +29,11 @@ class EmailVerificationRequest(BaseModel):
     first_name: str
     last_name: str
     domain: str
+
+class LeadershipRequest(BaseModel):
+    company_name: str
+    domain: Optional[str] = ""
+    gemini_api_key: Optional[str] = None
 
 class PitchGenerationRequest(BaseModel):
     cto_name: str = "Alex Rivera"
@@ -45,6 +50,24 @@ class PitchGenerationRequest(BaseModel):
 @app.get("/api/health")
 def health_check():
     return {"status": "online", "app": "ColdCraft AI"}
+
+@app.post("/api/find-leadership")
+async def find_leadership_endpoint(req: LeadershipRequest):
+    if not req.company_name:
+        raise HTTPException(status_code=400, detail="Company Name is required.")
+    
+    try:
+        executives = await find_company_leadership(
+            company_name=req.company_name,
+            domain=req.domain or "",
+            api_key=req.gemini_api_key
+        )
+        return {
+            "success": True,
+            "executives": executives
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Executive discovery failed: {str(e)}")
 
 @app.post("/api/verify-email")
 def verify_email_endpoint(req: EmailVerificationRequest):

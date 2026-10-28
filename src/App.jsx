@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
+import ExecutiveFinder from './components/ExecutiveFinder';
 import InputForm from './components/InputForm';
 import EmailDiscovery from './components/EmailDiscovery';
 import PitchStudio from './components/PitchStudio';
 import EmailPreviewModal from './components/EmailPreviewModal';
 import SettingsModal from './components/SettingsModal';
 import { verifyEmailAddress, generatePitches } from './utils/api';
-import { AlertCircle, Zap, ShieldCheck } from 'lucide-react';
+import { AlertCircle, Zap } from 'lucide-react';
 
 const DEMO_DATA = {
   ctoName: 'Alex Rivera',
@@ -37,7 +38,7 @@ export default function App() {
   const [geminiApiKey, setGeminiApiKey] = useState('');
 
   useEffect(() => {
-    fetch('/api/')
+    fetch('/api/health')
       .then((res) => res.json())
       .then(() => setIsBackendLive(true))
       .catch(() => setIsBackendLive(false));
@@ -70,6 +71,16 @@ export default function App() {
       setIsLoadingDiscovery(false);
       setIsLoadingPitch(false);
     }
+  };
+
+  const handleSelectExecutive = (execData) => {
+    setFormData((prev) => ({
+      ...prev,
+      ctoName: execData.ctoName,
+      companyName: execData.companyName || prev.companyName,
+      domain: execData.domain || prev.domain,
+      linkedinUrl: execData.linkedinUrl || prev.linkedinUrl
+    }));
   };
 
   const handleRunEmailFinder = async () => {
@@ -165,28 +176,37 @@ export default function App() {
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-600 text-white">
-                3-Step Simple Flow
+                Executive Discovery & Outreach
               </span>
               <h2 className="text-sm md:text-base font-bold text-slate-900">
-                CTO Cold Email Permutations & Pitch Generator
+                Company Executive Finder & Technical Cold Email Engine
               </h2>
             </div>
             <p className="text-xs text-slate-600">
-              Auto-generate email candidates, verify mail servers, extract tech bottlenecks, and draft customized pitch emails.
+              Discover CTOs/VPs via Gemini AI, auto-generate email candidates, run MX checks, and draft CTO pitches.
             </p>
           </div>
 
           <div className="flex items-center gap-3 text-xs font-mono text-slate-600 self-start md:self-center font-medium">
-            <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-indigo-600" /> Free MX Verification</span>
+            <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-indigo-600" /> Executive Finder</span>
             <span>•</span>
-            <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-emerald-600" /> 0 Paid APIs Required</span>
+            <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-emerald-600" /> Free MX SMTP</span>
           </div>
         </div>
 
         {/* 2-Column Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column: Inputs */}
+          {/* Left Column: Executive Finder & Inputs */}
           <div className="lg:col-span-5 space-y-6">
+            {/* Executive Leadership Finder Card */}
+            <ExecutiveFinder
+              companyName={formData.companyName}
+              domain={formData.domain}
+              geminiApiKey={geminiApiKey}
+              onSelectExecutive={handleSelectExecutive}
+            />
+
+            {/* Target Form */}
             <InputForm
               formData={formData}
               setFormData={setFormData}
@@ -197,16 +217,16 @@ export default function App() {
             />
           </div>
 
-          {/* Right Column: Outputs */}
+          {/* Right Column: Email Matrix & Pitch Studio */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Step 2: Email Discovery */}
+            {/* Email Discovery */}
             <EmailDiscovery
               discoveryData={discoveryData}
               selectedEmail={selectedEmail}
               onSelectEmail={(email) => setSelectedEmail(email)}
             />
 
-            {/* Step 3: Pitch Studio */}
+            {/* Pitch Studio */}
             <PitchStudio
               pitchData={pitchData}
               targetEmail={selectedEmail}
@@ -218,7 +238,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500">
-        <p>ColdCraft AI — Simple Light Mode UI • Powered by FastAPI & Vite</p>
+        <p>ColdCraft AI — Executive Leadership Discovery & CTO Outreach Platform</p>
       </footer>
 
       {/* Modals */}

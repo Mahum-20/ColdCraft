@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+.venv/
+venv/
+ENV/
+
+# Node & Vite Cache
+node_modules/.vite/
+.vite/
+
+# Local Environment Variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Operating System Files
+.DS_Store
+Thumbs.db
