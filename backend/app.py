@@ -1,4 +1,9 @@
 import os
+import sys
+
+# Ensure backend directory is in sys.path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import uvicorn
 from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
@@ -102,9 +107,10 @@ async def generate_pitches_endpoint(req: PitchGenerationRequest):
     try:
         extracted_info = extract_tech_and_pain_points(req.job_snippet)
         
-        if req.gemini_api_key and req.gemini_api_key.strip():
+        effective_key = (req.gemini_api_key and req.gemini_api_key.strip()) or os.environ.get("GEMINI_API_KEY", "").strip()
+        if effective_key:
             pitches = await generate_pitches_with_gemini(
-                api_key=req.gemini_api_key.strip(),
+                api_key=effective_key,
                 cto_name=req.cto_name,
                 company_name=req.company_name,
                 domain=req.domain,
@@ -137,7 +143,7 @@ async def generate_pitches_endpoint(req: PitchGenerationRequest):
         raise HTTPException(status_code=500, detail=f"Pitch generation failed: {str(e)}")
 
 # Mount static files if frontend is built (dist folder)
-dist_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dist")
+dist_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dist")
 if os.path.exists(dist_path):
     app.mount("/assets", StaticFiles(directory=os.path.join(dist_path, "assets")), name="assets")
 
@@ -150,4 +156,8 @@ if os.path.exists(dist_path):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+    reload = os.environ.get("RELOAD", "false").lower() == "true"
+    if reload:
+        uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+    else:
+        uvicorn.run(app, host="0.0.0.0", port=port)
